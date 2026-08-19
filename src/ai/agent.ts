@@ -5,6 +5,10 @@ export class AIAgent {
   private page: Page;
   private openai: OpenAI;
   private model: string;
+  private static selectorCache = new Map<
+    string,
+    { role?: any; name?: string }
+  >();
 
   constructor(page: Page) {
     this.page = page;
@@ -19,6 +23,17 @@ export class AIAgent {
     instruction: string,
     context?: FrameLocator,
   ): Promise<Locator> {
+    const targetContext = context || this.page;
+
+    if (AIAgent.selectorCache.has(instruction)) {
+      const cached = AIAgent.selectorCache.get(instruction)!;
+      if (cached.role && cached.name) {
+        return targetContext
+          .getByRole(cached.role, { name: new RegExp(cached.name, "i") })
+          .first();
+      }
+      return targetContext.getByText(new RegExp(instruction, "i")).first();
+    }
     if (!process.env.AI_API_KEY) {
       return context
         ? context.getByText(new RegExp(instruction, "i")).first()
@@ -45,9 +60,7 @@ export class AIAgent {
           .getByRole(parsed.role, { name: new RegExp(parsed.name, "i") })
           .first();
       }
-    } catch {
-      
-    }
+    } catch {}
 
     return (context || this.page)
       .getByText(new RegExp(instruction, "i"))

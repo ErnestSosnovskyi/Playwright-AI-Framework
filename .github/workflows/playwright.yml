@@ -4,25 +4,33 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-node@v4
       with:
-        node-version: lts/*
+        node-version: 20
+        cache: 'npm'
+
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Chromium & System Dependencies
+
+    - name: Install Playwright Chromium
       run: npx playwright install chromium
+
     - name: Run Playwright tests
       env:
         QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
         AI_API_KEY: ${{ secrets.AI_API_KEY }}
         AI_BASE_URL: https://api.groq.com/openai/v1
+        CI: "true"
       run: npx playwright test
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:

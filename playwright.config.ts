@@ -20,6 +20,8 @@ export default defineConfig({
         projectCode: "VALTIVE",
         runComplete: true,
         logging: true,
+        basePath: "https://api.qase.io/v1",
+        autoCreate: true,
       },
     ],
   ],
