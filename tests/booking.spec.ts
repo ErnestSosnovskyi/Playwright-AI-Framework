@@ -5,7 +5,7 @@ test.describe("Valtive Calendly Automated Booking", () => {
     test(`Booking iteration #${i}`, async ({ page, calendlyPage, aiAgent }) => {
       test.setTimeout(60000);
 
-      await page.route(
+      await page.context().route(
         /.*calendly\.com\/api\/booking\/.*bookings.*/i,
         async (route) => {
           if (route.request().method() === "POST") {

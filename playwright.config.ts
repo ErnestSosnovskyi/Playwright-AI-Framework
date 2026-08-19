@@ -6,10 +6,11 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 export default defineConfig({
   testDir: "./tests",
+  timeout: 30000,
   fullyParallel: true,
   workers: 1,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  retries: 0,
   reporter: [
     ["html"],
     [
