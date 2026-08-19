@@ -12,21 +12,23 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: 0,
   reporter: [
-    ["html"],
+    ["list"],
+    ["html", { open: "never" }],
     [
       "playwright-qase-reporter",
       {
+        mode: "testops",
         apiToken: process.env.QASE_API_TOKEN,
         projectCode: "VALTIVE",
         runComplete: true,
         logging: true,
-        basePath: "https://api.qase.io/v1",
-        autoCreate: true,
+        environment: "local",
+        rootSuiteTitle: "Valtive Calendly Automated Booking",
       },
     ],
   ],
   use: {
-    trace: "on-first-retry",
+    trace: "off",
     viewport: { width: 1280, height: 720 },
     userAgent:
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
