@@ -74,13 +74,13 @@ export class AIAgent {
   }) {
     const nameField = this.page.getByRole("textbox", { name: /Your name/i });
     if (await nameField.isVisible().catch(() => false)) {
-      await nameField.fill(data.name);
+      await nameField.fill(data.name, { timeout: 3000 });
       await this.page
         .getByRole("textbox", { name: /Your email/i })
-        .fill(data.email);
+        .fill(data.email, { timeout: 3000 });
       await this.page
         .getByRole("textbox", { name: /Tell us about you/i })
-        .fill(data.message);
+        .fill(data.message, { timeout: 3000 });
     }
   }
 }
