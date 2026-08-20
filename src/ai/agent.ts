@@ -72,15 +72,29 @@ export class AIAgent {
     email: string;
     message: string;
   }) {
-    const nameField = this.page.getByRole("textbox", { name: /Your name/i });
-    if (await nameField.isVisible().catch(() => false)) {
-      await nameField.fill(data.name, { timeout: 3000 });
-      await this.page
-        .getByRole("textbox", { name: /Your email/i })
-        .fill(data.email, { timeout: 3000 });
-      await this.page
-        .getByRole("textbox", { name: /Tell us about you/i })
-        .fill(data.message, { timeout: 3000 });
+    try {
+      const nameField = this.page
+        .getByRole("textbox", { name: /Your name/i })
+        .first();
+      const isVisible = await nameField
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+
+      if (isVisible) {
+        await nameField.scrollIntoViewIfNeeded().catch(() => {});
+        await nameField.fill(data.name, { timeout: 3000, force: true });
+
+        await this.page
+          .getByRole("textbox", { name: /Your email/i })
+          .first()
+          .fill(data.email, { timeout: 3000, force: true });
+
+        await this.page
+          .getByRole("textbox", { name: /Tell us about you/i })
+          .first()
+          .fill(data.message, { timeout: 3000, force: true });
+      }
+    } catch {
     }
   }
 }
