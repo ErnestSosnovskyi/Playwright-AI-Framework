@@ -24,11 +24,16 @@ export class CalendlyPage {
 
     await availableDays.first().waitFor({ state: "visible", timeout: 15000 });
     const daysCount = await availableDays.count();
-    await availableDays.nth(slotIndex % Math.max(1, daysCount)).click();
+    //await availableDays.nth(slotIndex % Math.max(1, daysCount)).click();
+    const targetDay = availableDays.nth(slotIndex % Math.max(1, daysCount));
+    await targetDay.click();
 
-    const timeSlots = this.iframe.getByRole("button", {
+    /*const timeSlots = this.iframe.getByRole("button", {
       name: /^[0-9]{1,2}:[0-9]{2}$/,
-    });
+    });*/
+    const timeSlots = this.iframe
+      .getByRole("button", { name: /\b\d{1,2}:\d{2}(\s?[ap]m)?\b/i })
+      .or(this.iframe.locator('[data-container="time-button"] button'));
     await timeSlots.first().waitFor({ state: "visible", timeout: 10000 });
     const slotsCount = await timeSlots.count();
     await timeSlots.nth(slotIndex % Math.max(1, slotsCount)).click();

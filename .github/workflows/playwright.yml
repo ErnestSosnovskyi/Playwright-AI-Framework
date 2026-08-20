@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 15
+    timeout-minutes: 30
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,14 +20,15 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Install Playwright Chromium
-      run: npx playwright install chromium
+    - name: Install Playwright Chromium with system dependencies
+      run: npx playwright install --with-deps chromium
 
     - name: Run Playwright tests
       env:
         QASE_MODE: testops
+        QASE_TESTOPS_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+        QASE_TESTOPS_PROJECT: VALTIVE
         QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-        QASE_PROJECT_CODE: VALTIVE
         AI_API_KEY: ${{ secrets.AI_API_KEY }}
         AI_BASE_URL: https://api.groq.com/openai/v1
         CI: "true"
