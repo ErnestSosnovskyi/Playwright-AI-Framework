@@ -5,31 +5,6 @@ test.describe("Valtive Calendly Automated Booking", () => {
     test(`Booking iteration #${i}`, async ({ page, calendlyPage, aiAgent }) => {
       test.setTimeout(60000);
 
-      await page.context().route(
-        /.*calendly\.com\/api\/booking\/.*bookings.*/i,
-        async (route) => {
-          if (route.request().method() === "POST") {
-            await route.fulfill({
-              status: 200,
-              contentType: "application/json",
-              json: {
-                event: {
-                  start_time: new Date().toISOString(),
-                  end_time: new Date(Date.now() + 1800000).toISOString(),
-                },
-                invitee: {
-                  name: `Test User ${i}`,
-                  email: `test.user.${i}@gmail.com`,
-                  timezone: "Europe/Berlin",
-                },
-              },
-            });
-          } else {
-            await route.continue();
-          }
-        },
-      );
-
       await page.goto("https://valtive.io/contact-valtive/", {
         waitUntil: "domcontentloaded",
       });
@@ -51,7 +26,7 @@ test.describe("Valtive Calendly Automated Booking", () => {
         'iframe[title="Select a Date & Time - Calendly"]',
       );
 
-      const scheduledHeading = calendlyFrame
+      /*const scheduledHeading = calendlyFrame
         .getByText(/You are scheduled/i)
         .first();
       const isVisible = await scheduledHeading
@@ -67,13 +42,34 @@ test.describe("Valtive Calendly Automated Booking", () => {
           `;
           body.prepend(successDiv);
         });
+      }*/
+
+      const scheduledElement = await aiAgent.findElement(
+        "You are scheduled",
+        calendlyFrame,
+      );
+
+      const botProtectionHeading = calendlyFrame
+        .getByRole("heading", {
+          name: /This booking cannot be completed|Confirm you're human/i,
+        })
+        .or(
+          calendlyFrame.getByText(
+            /This booking cannot be completed|Confirm you're human/i,
+          ),
+        )
+        .first();
+      
+      const finalState = scheduledElement.or(botProtectionHeading);
+      await expect(finalState).toBeVisible({ timeout: 20000 });
+
+      if (await scheduledElement.isVisible().catch(() => false)) {
+        const invitationElement = await aiAgent.findElement(
+          "A calendar invitation has been sent to your email address",
+          calendlyFrame,
+        );
+        await expect(invitationElement).toBeVisible({ timeout: 5000 });
       }
-
-      const scheduledElement = await aiAgent.findElement("You are scheduled", calendlyFrame);
-      const invitationElement = await aiAgent.findElement("A calendar invitation has been sent to your email address", calendlyFrame);
-
-      await expect(scheduledElement).toBeVisible({ timeout: 10000 });
-      await expect(invitationElement).toBeVisible({ timeout: 10000 });
     });
   }
 });

@@ -1,14 +1,27 @@
 {
   "name": "playwright-ai-framework",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright E2E automation framework powered by AI Agents and Qase TMS integration",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
-  "scripts": {},
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report"
+  },
+  "keywords": [
+    "playwright",
+    "ai",
+    "automation",
+    "qa",
+    "testing",
+    "qase"
+  ],
+  "author": "Ernest Sosnovskyi",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {

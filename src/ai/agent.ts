@@ -24,15 +24,24 @@ export class AIAgent {
     context?: FrameLocator,
   ): Promise<Locator> {
     const targetContext = context || this.page;
+    const fallbackLocator = targetContext
+      .getByText(new RegExp(instruction, "i"))
+      .or(
+        targetContext.getByRole("heading", {
+          name: new RegExp(instruction, "i"),
+        }),
+      )
+      .first();
 
     if (AIAgent.selectorCache.has(instruction)) {
       const cached = AIAgent.selectorCache.get(instruction)!;
       if (cached.role && cached.name) {
         return targetContext
           .getByRole(cached.role, { name: new RegExp(cached.name, "i") })
+          .or(fallbackLocator)
           .first();
       }
-      return targetContext.getByText(new RegExp(instruction, "i")).first();
+      return fallbackLocator;
     }
     if (!process.env.AI_API_KEY) {
       return context
@@ -56,6 +65,11 @@ export class AIAgent {
       const targetContext = context || this.page;
 
       if (parsed.role && parsed.name) {
+        AIAgent.selectorCache.set(instruction, {
+          role: parsed.role,
+          name: parsed.name,
+        });
+
         return targetContext
           .getByRole(parsed.role, { name: new RegExp(parsed.name, "i") })
           .first();
@@ -94,7 +108,6 @@ export class AIAgent {
           .first()
           .fill(data.message, { timeout: 3000, force: true });
       }
-    } catch {
-    }
+    } catch {}
   }
 }

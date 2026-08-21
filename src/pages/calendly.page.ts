@@ -25,13 +25,18 @@ export class CalendlyPage {
     await availableDays.first().waitFor({ state: "visible", timeout: 15000 });
     const daysCount = await availableDays.count();
     const targetDay = availableDays.nth(slotIndex % Math.max(1, daysCount));
-    await targetDay.click();
+    await targetDay.click();    
 
-    await this.page.waitForTimeout(1000);
-
-    const timeSlots = this.iframe
+    /*const timeSlots = this.iframe
       .getByRole("button", { name: /^\s*\d{1,2}:\d{2}(\s?[ap]m)?\s*$/i })
-      .or(this.iframe.locator('[data-container="time-button"] button'));
+      .or(this.iframe.locator('[data-container="time-button"] button'));*/
+    const timeSlots = this.iframe
+      .locator("button[data-start-time]")
+      .or(
+        this.iframe.getByRole("button", {
+          name: /^\s*\d{1,2}:\d{2}(\s?[ap]m)?\s*$/i,
+        }),
+      );
     await timeSlots.first().waitFor({ state: "visible", timeout: 15000 });
     const slotsCount = await timeSlots.count();
     const targetSlot = timeSlots.nth(slotIndex % Math.max(1, slotsCount));
@@ -47,7 +52,7 @@ export class CalendlyPage {
     const nameInput = this.iframe
       .getByRole("textbox", { name: /Name/i })
       .first();
-    await nameInput.waitFor({ state: "visible", timeout: 10000 });
+    await nameInput.waitFor({ state: "visible", timeout: 15000 });
     await nameInput.fill(name);
 
     const emailInput = this.iframe
@@ -56,8 +61,9 @@ export class CalendlyPage {
     await emailInput.fill(email);
 
     const scheduleBtn = this.iframe
-      .getByRole("button", { name: "Schedule Event" })
+      .getByRole("button", { name: /Schedule Event/i })
       .first();
+      await scheduleBtn.waitFor({ state: "visible", timeout: 10000 });
     await scheduleBtn.click();
   }
 }
