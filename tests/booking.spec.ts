@@ -26,24 +26,6 @@ test.describe("Valtive Calendly Automated Booking", () => {
         'iframe[title="Select a Date & Time - Calendly"]',
       );
 
-      /*const scheduledHeading = calendlyFrame
-        .getByText(/You are scheduled/i)
-        .first();
-      const isVisible = await scheduledHeading
-        .isVisible({ timeout: 4000 })
-        .catch(() => false);
-
-      if (!isVisible) {
-        await calendlyFrame.locator("body").evaluate((body) => {
-          const successDiv = document.createElement("div");
-          successDiv.innerHTML = `
-            <h2>You are scheduled</h2>
-            <p>A calendar invitation has been sent to your email address.</p>
-          `;
-          body.prepend(successDiv);
-        });
-      }*/
-
       const scheduledElement = await aiAgent.findElement(
         "You are scheduled",
         calendlyFrame,
